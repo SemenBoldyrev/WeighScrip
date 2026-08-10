@@ -13,6 +13,13 @@
 
 //#include <pthread.h>
 
+// ВАЖНО: LVGL обходит дерево виджетов рекурсивно (layout + отрисовка).
+// Стек loopTask в Arduino-ESP32 по умолчанию всего 8 КБ, и на глубоких
+// экранах (напр. редактор пресетов) его не хватает ->
+// "Stack canary watchpoint triggered (loopTask)".
+// Макрос должен стоять именно в глобальной области .ino-файла.
+SET_LOOP_TASK_STACK_SIZE(32 * 1024);
+
 //because screen is rotated, this way easier
 #define TFT_HOR_RES TFT_HEIGHT
 #define TFT_VER_RES TFT_WIDTH
@@ -77,7 +84,14 @@ void setup() {
 void loop() {
   lv_loop();
   //get_debug_info(1, 1);
-  
+
+  // временная диагностика: следим за запасом стека loopTask
+  static uint32_t lastStackLog = 0;
+  if (millis() - lastStackLog > 2000) {
+    lastStackLog = millis();
+    show_stack_info("loop");
+  }
+
   delay(10);
 }
 

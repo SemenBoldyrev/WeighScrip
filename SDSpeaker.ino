@@ -89,7 +89,14 @@ void load_presets_from_SD() {
   deserializeJson(doc, read_file(presetPath));
   JsonArray jsonArr = doc.as<JsonArray>();
 
-  memset(presetArr, 0, MAX_PRESET_AMOUNT);
+  // НЕЛЬЗЯ memset по массиву структур со String - это ломает кучу.
+  // Чистим "по-человечески".
+  for (int i = 0; i < MAX_PRESET_AMOUNT; i++) {
+    presetArr[i].index = 0;
+    presetArr[i].name = "";
+    presetArr[i].min = 0;
+    presetArr[i].max = 0;
+  }
 
   int itemCount = 0;
   for (JsonObject item : doc.as<JsonArray>()) {

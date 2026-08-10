@@ -12,7 +12,7 @@ const char* ntpServer = "pool.ntp.org";
 
 void init_wifi() {
   Serial.println("Initializing wifi connection...");
-  WiFi.mode(WIFI_AP);
+  WiFi.mode(WIFI_STA); // было WIFI_AP - в этом режиме WiFi.begin() к сети не подключится
 
   connect_to_last_wifi();
   if (ConnectionOk) sync_time(timezoneInfo);
@@ -68,14 +68,19 @@ void scan_network() {
   int n = WiFi.scanNetworks();
   if (n == 0) Serial.println("No networks found...");
   else {
-    memset(scanedWifiArr, 0, MAX_WIFI_AMOUNT);
+    // memset по структурам со String ломает кучу - чистим полями
+    for (int i = 0; i < MAX_WIFI_AMOUNT; i++) {
+      scanedWifiArr[i].ssid = "";
+      scanedWifiArr[i].rssi = 0;
+      scanedWifiArr[i].authOpen = false;
+    }
 
     Serial.print(n);
     Serial.println(" networks found");
 
     Serial.println("---------");
     for (int i = 0; i < n; i++){
-      if (i > MAX_WIFI_AMOUNT) continue;
+      if (i >= MAX_WIFI_AMOUNT) continue; // было ">" - запись за границу массива
       
       scanedWifiArr[i].ssid = WiFi.SSID(i);
       scanedWifiArr[i].rssi = WiFi.RSSI(i);

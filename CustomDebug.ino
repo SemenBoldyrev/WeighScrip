@@ -26,3 +26,12 @@ void show_heap_info() {
 void show_flash_inf() {
 
 }
+
+// Сколько байт стека у текущей задачи ОСТАЛОСЬ в самый худший момент.
+// Если значение падает к нулю - будет "Stack canary watchpoint triggered".
+void show_stack_info(const char* tag) {
+  // В ESP-IDF (в отличие от «ванильного» FreeRTOS) эта функция возвращает
+  // уже БАЙТЫ, а не слова. Умножать на 4 не нужно.
+  UBaseType_t freeBytes = uxTaskGetStackHighWaterMark(NULL);
+  Serial.printf("[STACK] %-24s free: %u bytes\n", tag, (unsigned)freeBytes);
+}
