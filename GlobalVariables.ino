@@ -9,6 +9,29 @@ bool hand_mode;
 int cur_preset_amount = 0;
 int cur_wifi_amount = 0;
 
+char date_str[15] = "01.01.0001";
+char time_str[15] = "01:01";
+
+const char *get_var_time_str() {
+    return time_str;
+}
+
+void set_var_time_str(const char *value) {
+    strncpy(time_str, value, sizeof(time_str) / sizeof(char));
+    time_str[sizeof(time_str) / sizeof(char) - 1] = 0;
+}
+
+
+const char *get_var_date_str() {
+    return date_str;
+}
+
+void set_var_date_str(const char *value) {
+    strncpy(date_str, value, sizeof(date_str) / sizeof(char));
+    date_str[sizeof(date_str) / sizeof(char) - 1] = 0;
+}
+
+
 bool get_var_hand_mode() {
     return hand_mode;
 }
@@ -46,6 +69,7 @@ int get_var_cur_preset_amount() {
 void set_var_cur_preset_amount(int value) {
   cur_preset_amount = value;
 }
+
 
 int get_var_cur_wifi_amount() {
   return cur_wifi_amount;

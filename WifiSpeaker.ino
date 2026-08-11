@@ -117,26 +117,28 @@ void wifi_disconnect() {
 
 void sync_time(const char* timezone) { //<-- its here,  because depends on internet connection, atleast for now
   if (!ConnectionOk) return;
+  Serial.println();
+  Serial.println("Syncing time");
+
   configTime(0, 0, ntpServer);
   setenv("TZ", timezone, 1);
   tzset();
 
+  // int ttc = 0;
+  // while (ttc != TIME_TO_CONNECT) {
+  //   delay(1000);
+  //   ttc ++;
+  //   Serial.print(".");
+  // }
   Serial.println();
   Serial.println("Timezone changed! New current time: ");
-
-  int ttc = 0;
-  while (ttc != TIME_TO_CONNECT) {
-    delay(1000);
-    ttc ++;
-    Serial.print(".");
-  }
-  Serial.println();
 
   struct tm timeInfo;
   if (!getLocalTime(&timeInfo)) {
     Serial.println("ERROR ON EXTRACTING TIME");
-    return;
+    //return;
   }
+  getLocalTime(&timeInfo);
 
   Serial.print("Time: ");
 
@@ -147,4 +149,6 @@ void sync_time(const char* timezone) { //<-- its here,  because depends on inter
   Serial.printf(" %02d:%02d:%02d\n", timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec);
   
   Serial.println();
+
+  common_time_procedure();
 }

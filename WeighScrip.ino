@@ -79,18 +79,14 @@ void setup() {
   // Serial.printf("Configured IDE Flash Size: %d MB\n", ide_flash_size / (1024 * 1024));
 
   init_wifi();
+
+  init_time();
 }
 
 void loop() {
   lv_loop();
-  //get_debug_info(1, 1);
 
-  // временная диагностика: следим за запасом стека loopTask
-  static uint32_t lastStackLog = 0;
-  if (millis() - lastStackLog > 2000) {
-    lastStackLog = millis();
-    show_stack_info("loop");
-  }
+  //get_debug_info(0, 0, 1);
 
   delay(10);
 }

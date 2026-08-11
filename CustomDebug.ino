@@ -1,5 +1,5 @@
-void get_debug_info(bool heapInf, bool flasshInf) {
-  Serial.println("========================================");
+void get_debug_info(bool heapInf, bool flasshInf, bool looptask) {
+  //Serial.println("========================================");
 
   if (heapInf)
   {
@@ -9,6 +9,10 @@ void get_debug_info(bool heapInf, bool flasshInf) {
   if (flasshInf)
   {
     show_flash_inf();
+  }
+
+  if (looptask) {
+    show_looptask_info();
   }
 }
 
@@ -25,6 +29,15 @@ void show_heap_info() {
 
 void show_flash_inf() {
 
+}
+
+void show_looptask_info() {
+  // временная диагностика: следим за запасом стека loopTask
+  static uint32_t lastStackLog = 0;
+  if (millis() - lastStackLog > 2000) {
+    lastStackLog = millis();
+    show_stack_info("loop");
+  }
 }
 
 // Сколько байт стека у текущей задачи ОСТАЛОСЬ в самый худший момент.
