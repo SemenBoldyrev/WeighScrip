@@ -1,3 +1,5 @@
+int curScreenId;
+
 void change_to_main_screen() {
   if (get_var_hand_mode() == true) change_screen(SCREEN_ID_HAND_MODE_SCREEN);
   else change_screen(SCREEN_ID_MAIN_SCREEN);
@@ -8,6 +10,7 @@ void change_screen(ScreensEnum screen) {
   Serial.println(screen);
   loadScreen(screen);
   Serial.println("Screen Changed");
+  curScreenId = (int)screen;
 }
 
 void change_option_sub_screen(int screen) {
@@ -39,6 +42,6 @@ void change_option_sub_screen(int screen) {
   show_stack_info("after sub-screen");
 }
 
-void request_text_redaction(bool numberOnly) {
-  
+int get_cur_screen_id() {
+  return curScreenId;
 }

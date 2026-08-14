@@ -27,3 +27,11 @@ void action_test_signal(lv_event_t *e) {
 void action_change_option_screen(lv_event_t *e) {
   change_option_sub_screen(get_event_user_data_int(e));
 }
+
+void action_request_input_change(lv_event_t *e) {
+    request_input_change(get_event_user_data_int(e));
+}
+
+void action_end_input_session(lv_event_t *e) {
+  end_input_session();
+}

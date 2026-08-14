@@ -1,8 +1,8 @@
 //
 // GLOBALS
 //
-#define MAX_PRESET_AMOUNT 25 //<-- I will store it here, at least for now
-#define MAX_WIFI_AMOUNT 10
+// MAX_PRESET_AMOUNT / MAX_WIFI_AMOUNT / MAX_INPUT_SIZE переехали в structures.h,
+// иначе их не видят .ino-файлы, стоящие в алфавите раньше этого.
 
 bool hand_mode;
 
@@ -12,7 +12,7 @@ int cur_wifi_amount = 0;
 char date_str[15] = "01.01.0001";
 char time_str[15] = "01:01";
 
-char input_str[25] = { 0 };
+char input_str[MAX_INPUT_SIZE] = "";
 
 const char *get_var_input_str() {
     return input_str;
