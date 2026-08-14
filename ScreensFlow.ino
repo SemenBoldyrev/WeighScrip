@@ -23,7 +23,6 @@ void change_option_sub_screen(int screen) {
     case 0:
       lv_obj_add_flag(objects.preset_option_screen, LV_OBJ_FLAG_HIDDEN);
       lv_obj_add_flag(objects.wifi_option_screen, LV_OBJ_FLAG_HIDDEN);
-
       break;
 
     case 1:
@@ -38,4 +37,8 @@ void change_option_sub_screen(int screen) {
   }
 
   show_stack_info("after sub-screen");
+}
+
+void request_text_redaction(bool numberOnly) {
+  
 }

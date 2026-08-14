@@ -12,6 +12,17 @@ int cur_wifi_amount = 0;
 char date_str[15] = "01.01.0001";
 char time_str[15] = "01:01";
 
+char input_str[25] = { 0 };
+
+const char *get_var_input_str() {
+    return input_str;
+}
+
+void set_var_input_str(const char *value) {
+    strncpy(input_str, value, sizeof(input_str) / sizeof(char));
+    input_str[sizeof(input_str) / sizeof(char) - 1] = 0;
+}
+
 const char *get_var_time_str() {
     return time_str;
 }

@@ -59,11 +59,16 @@ void setup() {
   lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
   lv_indev_set_read_cb(indev, read_touch);
 
+  // Serial.println("[BOOT] ui_init() ->");
+  // show_lvgl_mem_info("before ui_init");
   ui_init();
+  // Serial.println("[BOOT] ui_init() <- ok");
+  // show_lvgl_mem_info("after ui_init");
 
   tft.setRotation(3);
 
   change_to_main_screen();
+  // Serial.println("[BOOT] first screen loaded");
 
   init_SD();
   Serial.print(get_test_string_sd());
@@ -95,7 +100,20 @@ void loop() {
 void lv_loop() {
   lv_tick_inc(millis() - lastTick);
   lastTick = millis();
-  lv_timer_handler(); // <-- here happens error
+
+  // Трассировка первых кадров: если в мониторе будет "frame N ->" без "<- ok",
+  // значит зависли ВНУТРИ lv_timer_handler (отрисовка/layout), а не в нашем коде.
+  static uint32_t lvFrame = 0;
+  bool trace = (lvFrame < 20);
+  if (trace) {
+    Serial.printf("[LV] frame %u ->\n", (unsigned)lvFrame); Serial.flush();
+    if (lvFrame < 4) show_lvgl_mem_info("before frame");
+  }
+
+  lv_timer_handler();
+
+  if (trace) { Serial.printf("[LV] frame %u <- ok\n", (unsigned)lvFrame); Serial.flush(); }
+  lvFrame++;
   //lv_timer_periodic_handler();
   // pthread_mutex_lock(&my_mutex);
   // lv_task_handler();

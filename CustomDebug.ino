@@ -48,3 +48,33 @@ void show_stack_info(const char* tag) {
   UBaseType_t freeBytes = uxTaskGetStackHighWaterMark(NULL);
   Serial.printf("[STACK] %-24s free: %u bytes\n", tag, (unsigned)freeBytes);
 }
+
+// Состояние ВНУТРЕННЕЙ кучи LVGL (это не общая куча ESP32!).
+// Если used_pct подбирается к 100 - LV_MEM_SIZE в lv_conf.h мал.
+void show_lvgl_mem_info(const char* tag) {
+  static bool once = false;
+  if (!once) {
+    once = true;
+    Serial.printf("[LVGL]  version %d.%d.%d\n",
+                  LVGL_VERSION_MAJOR, LVGL_VERSION_MINOR, LVGL_VERSION_PATCH);
+#ifdef LV_MEM_SIZE
+    Serial.printf("[LVGL]  LV_MEM_SIZE = %u B\n", (unsigned)LV_MEM_SIZE);
+#else
+    Serial.println("[LVGL]  LV_MEM_SIZE not defined here");
+#endif
+  }
+
+  // lv_mem_monitor() есть всегда; если LVGL работает через clib malloc,
+  // total_size вернётся нулём - тогда смотрим на [HEAP].
+  lv_mem_monitor_t mon;
+  lv_mem_monitor(&mon);
+  Serial.printf("[LVMEM] %-18s total: %u B  used: %u%%  free: %u B  biggest: %u B  frag: %u%%\n",
+                tag, (unsigned)mon.total_size, (unsigned)mon.used_pct,
+                (unsigned)mon.free_size, (unsigned)mon.free_biggest_size,
+                (unsigned)mon.frag_pct);
+
+  Serial.printf("[HEAP]  %-18s free: %u B  biggest: %u B\n", tag,
+                (unsigned)heap_caps_get_free_size(MALLOC_CAP_8BIT),
+                (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
+  Serial.flush();
+}

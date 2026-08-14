@@ -59,12 +59,17 @@ typedef struct _objects_t {
     lv_obj_t *preset_redactor;
     lv_obj_t *obj8;
     lv_obj_t *wifi_option_screen;
+    lv_obj_t *test_option_screen;
     lv_obj_t *obj9;
-    lv_obj_t *obj9__obj0;
-    lv_obj_t *obj9__obj1;
-    lv_obj_t *obj9__obj1__obj0;
-    lv_obj_t *obj9__obj1__obj1;
-    lv_obj_t *obj9__obj2;
+    lv_obj_t *obj9__obj7;
+    lv_obj_t *obj9__keyboard_text_area;
+    lv_obj_t *obj9__obj8;
+    lv_obj_t *obj10;
+    lv_obj_t *obj10__obj0;
+    lv_obj_t *obj10__obj1;
+    lv_obj_t *obj10__obj1__obj0;
+    lv_obj_t *obj10__obj1__obj1;
+    lv_obj_t *obj10__obj2;
 } objects_t;
 
 extern objects_t objects;
@@ -101,6 +106,9 @@ void tick_user_widget_split_button_switch(int startWidgetIndex);
 
 void create_user_widget_preset_redaction_node(lv_obj_t *parent_obj, int startWidgetIndex);
 void tick_user_widget_preset_redaction_node(int startWidgetIndex);
+
+void create_user_widget_keyboard_input_widget(lv_obj_t *parent_obj, int startWidgetIndex);
+void tick_user_widget_keyboard_input_widget(int startWidgetIndex);
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);
