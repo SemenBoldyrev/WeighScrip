@@ -7,8 +7,10 @@
 // и определений оттуда не видит. structures.h подключается из WeighScrip.ino,
 // то есть в самом начале - значит макросы видны всем файлам.
 #define MAX_PRESET_AMOUNT 25
-#define MAX_WIFI_AMOUNT   10
+#define MAX_WIFI_AMOUNT   5
 #define MAX_INPUT_SIZE    25
+
+#define TIMEZONE_CODE "GMT-3"
 
 struct paramPresetStruct {
   int index;

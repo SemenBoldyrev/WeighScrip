@@ -91,6 +91,8 @@ void setup() {
 void loop() {
   lv_loop();
 
+  wifi_tick();   // следит за связью, не блокирует
+
   //get_debug_info(0, 0, 1);
 
   delay(10);
@@ -118,6 +120,8 @@ void lv_loop() {
   // pthread_mutex_lock(&my_mutex);
   // lv_task_handler();
   // pthread_mutex_unlock(&my_mutex);
+  
+  wifi_tick();
   ui_tick();
 }
 

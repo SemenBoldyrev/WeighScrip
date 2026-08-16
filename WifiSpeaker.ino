@@ -7,15 +7,63 @@ wifiNetworkData scanedWifiArr[MAX_WIFI_AMOUNT];
 
 bool ConnectionOk = 0;
 
-const char* timezoneInfo = "GMT-3";
+const char* timezoneInfo = TIMEZONE_CODE;
 const char* ntpServer = "pool.ntp.org";
 
 void init_wifi() {
   Serial.println("Initializing wifi connection...");
   WiFi.mode(WIFI_STA); // было WIFI_AP - в этом режиме WiFi.begin() к сети не подключится
+  WiFi.setAutoReconnect(true);  // драйвер сам поднимет связь после короткого пропадания
 
   connect_to_last_wifi();
   if (ConnectionOk) sync_time(timezoneInfo);
+}
+
+
+//
+// Периодическая проверка связи. Вызывается из loop(), ничего не блокирует.
+//
+#define WIFI_CHECK_PERIOD     2000    // как часто опрашивать статус, мс
+#define WIFI_RECONNECT_PERIOD 30000   // как часто пробовать переподключиться, мс
+
+static uint32_t lastWifiCheck = 0;
+static uint32_t lastReconnectTry = 0;
+
+void wifi_tick() {
+  if (millis() - lastWifiCheck < WIFI_CHECK_PERIOD) return;
+  lastWifiCheck = millis();
+
+  bool nowOk = (WiFi.status() == WL_CONNECTED);
+
+  // реагируем только на СМЕНУ состояния, а не каждые 2 секунды
+  if (nowOk != ConnectionOk) {
+    ConnectionOk = nowOk;
+    on_wifi_state_changed(nowOk);
+  }
+
+  // связи нет - изредка пробуем поднять. reconnect() не блокирует.
+  if (!ConnectionOk && millis() - lastReconnectTry > WIFI_RECONNECT_PERIOD) {
+    lastReconnectTry = millis();
+    Serial.println("[WIFI] trying to reconnect...");
+    WiFi.reconnect();
+  }
+}
+
+void on_wifi_state_changed(bool ok) {
+  if (ok) {
+    Serial.print("[WIFI] connected, ip: ");
+    Serial.println(WiFi.localIP());
+    sync_time(timezoneInfo);   // время могло разъехаться, пока связи не было
+  }
+  else {
+    Serial.println("[WIFI] connection lost");
+  }
+
+  // сюда же вешается обновление значка в интерфейсе
+}
+
+bool is_wifi_ok() {
+  return ConnectionOk;
 }
 
 bool connect_to_wifi(String gSsid, String gPassword) { //maybe the char* would be better, but idk, struct using String
@@ -65,8 +113,22 @@ void scan_network() {
   Serial.println("---");
   Serial.println("Scaning network...");
 
+  // Сканировать можно, только когда радио в режиме станции и НЕ занято
+  // попыткой подключения. После неудачного WiFi.begin() ESP32 продолжает
+  // переподключаться в фоне бесконечно - и scanNetworks() отдаёт -2.
+  WiFi.mode(WIFI_STA);
+  WiFi.scanDelete();
+  WiFi.disconnect(false);
+  delay(100);
+
   int n = WiFi.scanNetworks();
-  if (n == 0) Serial.println("No networks found...");
+  if (n <= 0) {
+    // -1 = WIFI_SCAN_RUNNING (ещё идёт), -2 = WIFI_SCAN_FAILED
+    Serial.print("No networks found...  (");
+    Serial.print(n);
+    Serial.println(")");
+    set_var_cur_wifi_amount(0);
+  }
   else {
     // memset по структурам со String ломает кучу - чистим полями
     for (int i = 0; i < MAX_WIFI_AMOUNT; i++) {
@@ -106,7 +168,7 @@ void scan_network() {
   }
 }
 
-wifiNetworkData *get_scaned_wifi_detwork_data(int index) {
+wifiNetworkData *get_scaned_wifi_network_data(int index) {
   return &scanedWifiArr[index];
 }
 

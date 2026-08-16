@@ -28,10 +28,42 @@ void action_change_option_screen(lv_event_t *e) {
   change_option_sub_screen(get_event_user_data_int(e));
 }
 
+
+void action_update_wifi_list(lv_event_t *e) {
+    refresh_wifis_list();
+}
+
+void action_sync_time(lv_event_t *e) {
+    sync_time(TIMEZONE_CODE);
+}
+
+
+int callback_id = 0;
+int callback_data = 0;
+
 void action_request_input_change(lv_event_t *e) {
+    callback_id = 0;
+    callback_data = 0;
     request_input_change(get_event_user_data_int(e));
 }
 
+void action_request_input_change_wifi(lv_event_t *e) {
+    callback_id = 1;
+    callback_data = get_event_user_data_int(e);
+    request_input_change(0);
+}
+
 void action_end_input_session(lv_event_t *e) {
-  end_input_session();
+    end_input_session();
+    
+    if (callback_id <= 0) return;
+    switch (callback_id) {
+      case 1: //for wifi connection try
+        connect_to_selected_wifi(callback_data);
+        break;
+      default: break;
+    }
+
+    callback_id = 0;
+    callback_data = 0;
 }
