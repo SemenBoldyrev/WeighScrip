@@ -25,7 +25,6 @@ const char wifiPath[] = "/Options/WiFiConnection.json";
 //   float max;
 // };
 
-paramPresetStruct presetArr[MAX_PRESET_AMOUNT];
 wifiDataStruct wifiData;
 
 void init_SD() {
@@ -92,23 +91,22 @@ void load_presets_from_SD() {
   // НЕЛЬЗЯ memset по массиву структур со String - это ломает кучу.
   // Чистим "по-человечески".
   for (int i = 0; i < MAX_PRESET_AMOUNT; i++) {
-    presetArr[i].index = 0;
-    presetArr[i].name = "";
-    presetArr[i].min = 0;
-    presetArr[i].max = 0;
+    paramPresetStruct *cur_preset = get_var_preset(i);
+    cur_preset -> index = 0;
+    cur_preset -> name = "";
+    cur_preset -> min = 0;
+    cur_preset -> max = 0;
   }
 
   int itemCount = 0;
   for (JsonObject item : doc.as<JsonArray>()) {
     if (itemCount >= MAX_PRESET_AMOUNT) continue;
-    paramPresetStruct paramPreset;
+    paramPresetStruct *cur_preset = get_var_preset(itemCount);
 
-    paramPreset.index = item["index"];
-    paramPreset.name = item["name"].as<String>();
-    paramPreset.min = item["min"];
-    paramPreset.max = item["max"];
-
-    presetArr[itemCount] = paramPreset;
+    cur_preset -> index = item["index"];
+    cur_preset -> name = item["name"].as<String>();
+    cur_preset -> min = item["min"];
+    cur_preset -> max = item["max"];
     itemCount++;
   }
 
@@ -129,10 +127,6 @@ void save_presets_to_SD(paramPresetStruct* gPresetArr, size_t size) {
   }
 
   write_file(presetPath, doc.as<String>());
-}
-
-struct paramPresetStruct *get_preset(int id) {
-  return &presetArr[id];
 }
 
 

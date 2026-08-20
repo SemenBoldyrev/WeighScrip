@@ -5,7 +5,7 @@ static int lastReqTextboxId = -1;
 
 static lv_obj_t* cur_target = NULL;
 
-static int numerical_keyboard_ids[2] = {1, 2};
+static int numerical_keyboard_ids[4] = {1, 2, 4, 5};
 static int numerical_keyboard_ids_size = sizeof(numerical_keyboard_ids) / sizeof(numerical_keyboard_ids[0]);
 
 
@@ -41,6 +41,18 @@ void set_cur_str_container_pointer(int id) {
 
     case 2:
       cur_target = objects.textbox_id_2;
+      break;
+
+    case 3:
+      cur_target = objects.textbox_id_3;
+      break;
+
+    case 4:
+      cur_target = objects.textbox_id_4;
+      break;
+
+    case 5:
+      cur_target = objects.textbox_id_5;
       break;
 
     default:

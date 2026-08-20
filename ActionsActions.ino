@@ -67,3 +67,19 @@ void action_end_input_session(lv_event_t *e) {
     callback_id = 0;
     callback_data = 0;
 }
+
+void action_add_preset_section(lv_event_t *e) {
+    add_new_section();
+}
+
+void action_remove_preset_section(lv_event_t *e) {
+    remove_section();
+}
+
+void action_request_preset_section_redact(lv_event_t *e) {
+    start_section_redaction(get_event_user_data_int(e));
+}
+
+void action_save_presets_from_options(lv_event_t *e) {
+    save_presets_from_sections();
+}

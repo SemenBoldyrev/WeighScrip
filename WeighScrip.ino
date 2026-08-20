@@ -82,10 +82,13 @@ void setup() {
 
   // uint32_t ide_flash_size = ESP.getFlashChipSize();
   // Serial.printf("Configured IDE Flash Size: %d MB\n", ide_flash_size / (1024 * 1024));
+  load_presets_from_SD();
 
   init_wifi();
 
   init_time();
+
+  fetch_sections(); // -> for settings
 }
 
 void loop() {

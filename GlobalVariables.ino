@@ -14,6 +14,29 @@ char time_str[15] = "01:01";
 
 char input_str[MAX_INPUT_SIZE] = "";
 
+paramPresetStruct presets_arr[MAX_PRESET_AMOUNT];
+
+paramPresetStruct *get_var_preset_arr() {
+    return presets_arr;
+}
+
+paramPresetStruct *get_var_preset(int id) {
+    return &presets_arr[id];
+}
+
+void set_var_presets_arr(paramPresetStruct *value) {
+    // depends on current preset amount
+    int presets_amount = get_var_cur_preset_amount();
+    for (int i = 0; i < presets_amount; i++)
+    {
+      presets_arr[i].index = value -> index;
+      presets_arr[i].name = value -> name;
+      presets_arr[i].min = value -> min;
+      presets_arr[i].max = value -> max;
+    }
+}
+
+
 const char *get_var_input_str() {
     return input_str;
 }
@@ -89,3 +112,4 @@ int get_var_cur_wifi_amount() {
 void set_var_cur_wifi_amount(int value) {
   cur_wifi_amount = value;
 }
+

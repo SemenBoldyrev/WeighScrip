@@ -15,9 +15,8 @@ enum ScreensEnum {
     SCREEN_ID_HAND_MODE_SCREEN = 2,
     SCREEN_ID_AUTO_MODE_SCREEN = 3,
     SCREEN_ID_OPTIONS_SCREEN = 4,
-    SCREEN_ID_LOGS_SCREEN = 5,
-    SCREEN_ID_KEYBOARD_SCREEN = 6,
-    _SCREEN_ID_LAST = 6
+    SCREEN_ID_KEYBOARD_SCREEN = 5,
+    _SCREEN_ID_LAST = 5
 };
 
 typedef struct _objects_t {
@@ -25,7 +24,6 @@ typedef struct _objects_t {
     lv_obj_t *hand_mode_screen;
     lv_obj_t *auto_mode_screen;
     lv_obj_t *options_screen;
-    lv_obj_t *logs_screen;
     lv_obj_t *keyboard_screen;
     lv_obj_t *obj0;
     lv_obj_t *obj0__obj0;
@@ -60,7 +58,31 @@ typedef struct _objects_t {
     lv_obj_t *obj6;
     lv_obj_t *obj7;
     lv_obj_t *preset_option_screen;
-    lv_obj_t *preset_redactor;
+    lv_obj_t *textbox_id_3;
+    lv_obj_t *textbox_id_4;
+    lv_obj_t *textbox_id_5;
+    lv_obj_t *preset_select_0;
+    lv_obj_t *preset_name_0;
+    lv_obj_t *preset_select_1;
+    lv_obj_t *preset_name_1;
+    lv_obj_t *preset_select_2;
+    lv_obj_t *preset_name_2;
+    lv_obj_t *preset_select_3;
+    lv_obj_t *preset_name_3;
+    lv_obj_t *preset_select_4;
+    lv_obj_t *preset_name_4;
+    lv_obj_t *preset_select_5;
+    lv_obj_t *preset_name_5;
+    lv_obj_t *preset_select_6;
+    lv_obj_t *preset_name_6;
+    lv_obj_t *preset_select_7;
+    lv_obj_t *preset_name_7;
+    lv_obj_t *preset_select_8;
+    lv_obj_t *preset_name_8;
+    lv_obj_t *preset_select_9;
+    lv_obj_t *preset_name_9;
+    lv_obj_t *preset_removal_button;
+    lv_obj_t *preset_addition_button;
     lv_obj_t *wifi_option_screen;
     lv_obj_t *wifi_holder;
     lv_obj_t *wifi_select_0;
@@ -73,12 +95,6 @@ typedef struct _objects_t {
     lv_obj_t *wifi_name_3;
     lv_obj_t *wifi_select_4;
     lv_obj_t *wifi_name_4;
-    lv_obj_t *obj8;
-    lv_obj_t *obj8__obj0;
-    lv_obj_t *obj8__obj1;
-    lv_obj_t *obj8__obj1__obj0;
-    lv_obj_t *obj8__obj1__obj1;
-    lv_obj_t *obj8__obj2;
     lv_obj_t *number_keyboard;
     lv_obj_t *number_keyboard__obj9;
     lv_obj_t *number_keyboard__keyboard_text_area_1;
@@ -102,9 +118,6 @@ void tick_screen_auto_mode_screen();
 
 void create_screen_options_screen();
 void tick_screen_options_screen();
-
-void create_screen_logs_screen();
-void tick_screen_logs_screen();
 
 void create_screen_keyboard_screen();
 void tick_screen_keyboard_screen();

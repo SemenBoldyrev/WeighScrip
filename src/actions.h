@@ -16,6 +16,10 @@ extern void action_end_input_session(lv_event_t * e);
 extern void action_update_wifi_list(lv_event_t * e);
 extern void action_sync_time(lv_event_t * e);
 extern void action_request_input_change_wifi(lv_event_t * e);
+extern void action_add_preset_section(lv_event_t * e);
+extern void action_remove_preset_section(lv_event_t * e);
+extern void action_request_preset_section_redact(lv_event_t * e);
+extern void action_save_presets_from_options(lv_event_t * e);
 
 #ifdef __cplusplus
 }
