@@ -17,6 +17,13 @@
 // всё сверх него округляется и при сохранении записывается округлённым.
 #define WEIGHT_DECIMALS   6
 
+// Тип окна сообщения. Держим ЗДЕСЬ, а не в .ino: Arduino генерирует
+// прототипы функций в начало файла, и enum из середины .ino они бы не увидели.
+enum error_message_type {
+  EM_DEFAULT,
+  EM_DANGER
+};
+
 struct paramPresetStruct {
   int index;
   String name;

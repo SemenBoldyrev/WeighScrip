@@ -1,4 +1,4 @@
-void get_debug_info(bool heapInf, bool flasshInf, bool looptask) {
+void get_debug_info(bool heapInf, bool flasshInf, bool looptask, bool lvglMem) {
   //Serial.println("========================================");
 
   if (heapInf)
@@ -13,6 +13,10 @@ void get_debug_info(bool heapInf, bool flasshInf, bool looptask) {
 
   if (looptask) {
     show_looptask_info();
+  }
+
+  if(lvglMem) {
+    show_lvgl_mem_info_timer();
   }
 }
 
@@ -37,6 +41,15 @@ void show_looptask_info() {
   if (millis() - lastStackLog > 2000) {
     lastStackLog = millis();
     show_stack_info("loop");
+  }
+}
+
+void show_lvgl_mem_info_timer() {
+  // временная диагностика: следим за запасом стека loopTask
+  static uint32_t lastStackLog = 0;
+  if (millis() - lastStackLog > 2000) {
+    lastStackLog = millis();
+    show_lvgl_mem_info("loop");
   }
 }
 

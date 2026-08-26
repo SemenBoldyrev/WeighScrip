@@ -10,6 +10,7 @@ bool ConnectionOk = 0;
 const char* timezoneInfo = TIMEZONE_CODE;
 const char* ntpServer = "pool.ntp.org";
 
+
 void init_wifi() {
   Serial.println("Initializing wifi connection...");
   WiFi.mode(WIFI_STA); // было WIFI_AP - в этом режиме WiFi.begin() к сети не подключится
@@ -34,7 +35,6 @@ void wifi_tick() {
   lastWifiCheck = millis();
 
   bool nowOk = (WiFi.status() == WL_CONNECTED);
-
   // реагируем только на СМЕНУ состояния, а не каждые 2 секунды
   if (nowOk != ConnectionOk) {
     ConnectionOk = nowOk;
@@ -44,8 +44,15 @@ void wifi_tick() {
   // связи нет - изредка пробуем поднять. reconnect() не блокирует.
   if (!ConnectionOk && millis() - lastReconnectTry > WIFI_RECONNECT_PERIOD) {
     lastReconnectTry = millis();
-    Serial.println("[WIFI] trying to reconnect...");
-    WiFi.reconnect();
+
+    // Не к чему подключаться - reconnect() только насорит в лог
+    if (WiFi.SSID().length() == 0) return;
+
+    // Драйвер уже в процессе - не мешаем, иначе получим
+    // "sta is connecting, return error"
+    if (WiFi.status() == WL_IDLE_STATUS) return;
+
+    wifi_try_reconnect();
   }
 }
 
@@ -57,9 +64,22 @@ void on_wifi_state_changed(bool ok) {
   }
   else {
     Serial.println("[WIFI] connection lost");
+    wifi_try_reconnect();
   }
-
+  //
+  show_wifi_ok(ok);
   // сюда же вешается обновление значка в интерфейсе
+}
+
+void wifi_try_reconnect () {
+  // strange behavior in terminal, but breaks nothing so ok
+  Serial.println("[WIFI] trying to reconnect...");
+  WiFi.reconnect();
+  if (WiFi.status() == WL_CONNECTED) Serial.println("[WIFI] reconnection successfull!");
+  else Serial.println("[WIFI] reconnection unsuccessfull...");
+  //
+  show_wifi_ok(WiFi.status() == WL_CONNECTED); // need this in 3 different places, should change later
+  //
 }
 
 bool is_wifi_ok() {
@@ -74,7 +94,21 @@ bool connect_to_wifi(String gSsid, String gPassword) { //maybe the char* would b
   Serial.print("PASSWORD: ");
   Serial.println(gPassword);
 
-  //bool success = WiFi.softAP(gSsid, gPassword); //can just return WiFi.softAP(gSsid, gPassword), but want to debug so via success
+  // Пустой или заведомо мусорный SSID подключать бессмысленно, а вот
+  // навредить он успеет: драйвер уйдёт в бесконечные попытки и заблокирует
+  // и следующий begin(), и сканирование.
+  gSsid.trim();
+  if (gSsid.length() == 0 || gSsid == "-" || gSsid == "null") {
+    Serial.println("!! no valid saved SSID, skipping connect");
+    ConnectionOk = 0;
+    return false;
+  }
+
+  // Выходим из состояния "уже подключаюсь", иначе begin() ответит
+  // "sta is connecting, cannot set config" и конфиг не применится.
+  WiFi.disconnect(false);
+  delay(100);
+
   WiFi.begin(gSsid, gPassword);
 
   int ttc = 0;
@@ -93,9 +127,14 @@ bool connect_to_wifi(String gSsid, String gPassword) { //maybe the char* would b
     ConnectionOk = 1;
   }
   else {
-    Serial.println("Unable to connect..."); 
-    ConnectionOk = 0; 
-    }
+    Serial.println("Unable to connect...");
+    ConnectionOk = 0;
+    // Обязательно: иначе драйвер продолжит переподключаться в фоне вечно
+    // и заблокирует и сканирование, и любые следующие попытки.
+    WiFi.disconnect(false);
+  }
+
+  on_wifi_state_changed(success); // <-- for on start change and etc
 
   return success;
 }
@@ -113,13 +152,29 @@ void scan_network() {
   Serial.println("---");
   Serial.println("Scaning network...");
 
-  // Сканировать можно, только когда радио в режиме станции и НЕ занято
-  // попыткой подключения. После неудачного WiFi.begin() ESP32 продолжает
-  // переподключаться в фоне бесконечно - и scanNetworks() отдаёт -2.
-  WiFi.mode(WIFI_STA);
-  WiFi.scanDelete();
-  WiFi.disconnect(false);
-  delay(100);
+  // Драйвер может быть вообще не поднят - тогда любые mode/disconnect
+  // отвечают 0x3001 (ESP_ERR_WIFI_NOT_INIT). Сначала убеждаемся, что он есть.
+  wifi_mode_t mode = WiFi.getMode();
+  Serial.printf("[WIFI] mode before scan: %d, status: %d\n", (int)mode, (int)WiFi.status());
+
+  if (mode != WIFI_STA && mode != WIFI_AP_STA) {
+    if (!WiFi.mode(WIFI_STA)) {
+      Serial.println("!! cannot switch to STA, wifi driver is down");
+      set_var_cur_wifi_amount(0);
+      return;
+    }
+    delay(100);
+  }
+
+  WiFi.scanDelete();   // сбросить результат прошлого сканирования
+
+  // Отцепляемся, только если реально подключены или подключаемся -
+  // иначе disconnect() на пустом месте тоже сыплет ошибками.
+  wl_status_t st = WiFi.status();
+  if (st == WL_CONNECTED || st == WL_IDLE_STATUS) {
+    WiFi.disconnect(false);
+    delay(100);
+  }
 
   int n = WiFi.scanNetworks();
   if (n <= 0) {

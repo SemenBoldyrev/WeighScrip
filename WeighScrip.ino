@@ -18,13 +18,20 @@
 // экранах (напр. редактор пресетов) его не хватает ->
 // "Stack canary watchpoint triggered (loopTask)".
 // Макрос должен стоять именно в глобальной области .ino-файла.
-SET_LOOP_TASK_STACK_SIZE(32 * 1024);
+// Стек loopTask берётся ИЗ КУЧИ. Замеры показали пик расхода ~9.2 КБ,
+// так что 16 КБ хватает с запасом, а 16 КБ возвращаются Wi-Fi.
+// Следите за строкой [STACK] loop: если запас упадёт ниже ~3 КБ - вернуть 32.
+SET_LOOP_TASK_STACK_SIZE(16 * 1024);
 
 //because screen is rotated, this way easier
 #define TFT_HOR_RES TFT_HEIGHT
 #define TFT_VER_RES TFT_WIDTH
 //#define DRAW_BUF_SIZE (TFT_WIDTH * TFT_HEIGHT / 10 * (LV_COLOR_DEPTH / 8))
-#define DRAW_BUF_SIZE (320 * 20)
+//#define DRAW_BUF_SIZE (320 * 20)             // исходные 6400 Б = ~6 строк
+//#define DRAW_BUF_SIZE (480 * 40 * (LV_COLOR_DEPTH / 8))  // 38 КБ - Wi-Fi не хватило памяти на rx-буферы
+// 20 строк = 19200 Б. Втрое больше исходного, но куча остаётся для Wi-Fi.
+//#define DRAW_BUF_SIZE (480 * 20 * (LV_COLOR_DEPTH / 8))  // 19200 Б - кучи не хватило Wi-Fi
+#define DRAW_BUF_SIZE (480 * 10 * (LV_COLOR_DEPTH / 8))     // 9600 Б, всё ещё в 1.5 раза больше исходного
 
 
 TFT_eSPI tft = TFT_eSPI();
@@ -71,6 +78,7 @@ void setup() {
   // Serial.println("[BOOT] first screen loaded");
 
   init_SD();
+  // show_loading_picture();
   Serial.print(get_test_string_sd());
   //load_presets_from_SD();
 
@@ -84,11 +92,15 @@ void setup() {
   // Serial.printf("Configured IDE Flash Size: %d MB\n", ide_flash_size / (1024 * 1024));
   load_presets_from_SD();
 
+  // Wi-Fi требует нескольких килобайт ВНУТРЕННЕЙ памяти под rx-буферы.
+  // Если тут мало - драйвер упадёт с "Expected to init 4 rx buffer, actual is 0".
+  show_lvgl_mem_info("before wifi");
   init_wifi();
 
   init_time();
 
   fetch_sections(); // -> for settings
+  fetch_for_selection(); // -> for selection
 }
 
 void loop() {
@@ -96,9 +108,11 @@ void loop() {
 
   wifi_tick();   // следит за связью, не блокирует
 
-  //get_debug_info(0, 0, 1);
+  get_debug_info(0, 0, 0, 1);
 
-  delay(10);
+  // было delay(10) - фиксированная пауза резала частоту опроса тача.
+  // 1 мс достаточно, чтобы отдать время фоновым задачам (Wi-Fi, IDLE).
+  delay(1);
 }
 
 
@@ -124,9 +138,14 @@ void lv_loop() {
   // lv_task_handler();
   // pthread_mutex_unlock(&my_mutex);
   
-  wifi_tick();
   ui_tick();
 }
+
+// bool tft_output(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t* bitmap) { // for image callback (getting inside main, but will leave as is for now)
+//   if (y >= tft.height()) return 0;
+//   tft.pushImage(x, y, w, h, bitmap);
+//   return 1;
+// } 
 
 void read_touch(lv_indev_t *indev, lv_indev_data_t *data) {
   if (!touchscreen.touched()) {

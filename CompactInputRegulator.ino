@@ -25,11 +25,18 @@ void request_input_change(int textboxId) {
 
 
 void end_input_session() {
+  //
+  show_spiner(1);
+  //
+
   if (cur_target != NULL) {
     lv_textarea_set_text(cur_target, get_var_input_str());
   }
 
   change_screen((ScreensEnum)prevScreenId);
+  //
+  hide_all_spiners();
+  //
 }
 
 
@@ -90,10 +97,6 @@ int get_last_req_textbox_id() {
 // проверка, входит ли id в список полей с числовой клавиатурой
 bool numerical_keyboard_id(int value) {
   for (int i = 0; i < numerical_keyboard_ids_size; i++) {
-    Serial.print(numerical_keyboard_ids[i]);
-    Serial.print(" == ");
-    Serial.println(value);
-
     if (numerical_keyboard_ids[i] == value) {
       return true;
     }

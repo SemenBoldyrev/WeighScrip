@@ -1,5 +1,6 @@
 #include <SD.h>
 #include <ArduinoJson.h>
+// #include <TJpg_Decoder.h>
 
 #include "structures.h"
 
@@ -17,6 +18,7 @@ JsonDocument doc;
 const char presetPath[] = "/Options/Presets.json";
 const char testPath[] = "/Options/TestFile.txt";
 const char wifiPath[] = "/Options/WiFiConnection.json";
+const char loadingImagePath[] = "/Options/ESPloadingPicture.jpg";
 
 // struct paramPresetStruct{
 //   int index;
@@ -35,6 +37,10 @@ void init_SD() {
     SD_OK = false;
     return;
   }
+
+  // TJpgDec.setJpgScale(1);
+  // TJpgDec.setCallback(tft_output);
+
   SD_OK = true;
   Serial.println("-- SD card initialized successfully! --");
 }
@@ -73,9 +79,30 @@ void write_file(const char* path, String data) {
 }
 
 
+// void show_loading_picture() {
+//   if (!SD_OK) return;
+
+//   // было: SD.exists("testfile.txt") - картинка рисовалась только когда
+//   // постороннего файла НЕТ. Проверять надо саму картинку.
+//   if (!SD.exists(loadingImagePath)) {
+//     Serial.printf("!! no loading image at %s\n", loadingImagePath);
+//     return;
+//   }
+
+//   // ГЛАВНОЕ: TJpg_Decoder отдаёт пиксели RGB565 в порядке байт, обратном
+//   // тому, что ждёт tft.pushImage(). Без этого красный и синий меняются
+//   // местами и картинка уходит в сине-зелёный.
+//   bool prevSwap = tft.getSwapBytes();
+//   tft.setSwapBytes(true);
+
+//   TJpgDec.drawFsJpg(0, 0, loadingImagePath, SD);
+
+//   // Возвращаем как было: этот же флаг влияет на вывод LVGL.
+//   tft.setSwapBytes(prevSwap);
+// }
 
 String get_test_string_sd() {
-  if (!SD_OK) return "";
+  if (!SD_OK || SD.exists(testPath)) return "";
   return read_file(testPath); 
 }
 

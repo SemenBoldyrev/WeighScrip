@@ -30,11 +30,15 @@ void action_change_option_screen(lv_event_t *e) {
 
 
 void action_update_wifi_list(lv_event_t *e) {
+    show_spiner(0);
     refresh_wifis_list();
+    hide_all_spiners();
 }
 
 void action_sync_time(lv_event_t *e) {
+    show_spiner(0);
     sync_time(TIMEZONE_CODE);
+    hide_all_spiners();
 }
 
 
@@ -83,3 +87,24 @@ void action_request_preset_section_redact(lv_event_t *e) {
 void action_save_presets_from_options(lv_event_t *e) {
     save_presets_from_sections();
 }
+
+void action_select_dose_for_auto(lv_event_t *e) {
+    select_change_dose();
+}
+
+void action_try_reconnect_to_wi_fi(lv_event_t *e) {
+    show_spiner(0);
+    wifi_try_reconnect();
+    hide_all_spiners();
+}
+
+void action_error_message_pressed_yes(lv_event_t *e) {
+    Serial.println("[EM] 'YES' or 'OK' is pressed");
+    hide_error_message();   // без этого окно уже не закрыть
+}
+
+void action_error_message_pressed_no(lv_event_t *e) {
+    Serial.println("[EM] 'NO' is pressed");
+    hide_error_message();
+}
+

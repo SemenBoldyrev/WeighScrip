@@ -20,6 +20,11 @@ extern void action_add_preset_section(lv_event_t * e);
 extern void action_remove_preset_section(lv_event_t * e);
 extern void action_request_preset_section_redact(lv_event_t * e);
 extern void action_save_presets_from_options(lv_event_t * e);
+extern void action_dose_select(lv_event_t * e);
+extern void action_select_dose_for_auto(lv_event_t * e);
+extern void action_try_reconnect_to_wi_fi(lv_event_t * e);
+extern void action_error_message_pressed_yes(lv_event_t * e);
+extern void action_error_message_pressed_no(lv_event_t * e);
 
 #ifdef __cplusplus
 }
