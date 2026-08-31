@@ -23,7 +23,7 @@ static lv_obj_t* get_em_panel(int i) {
 
 // На экранах логов и клавиатуры виджета сообщения нет.
 static int em_index_for_screen(int screenId) {
-  switch (screenId) {
+  switch ((ScreensEnum)screenId) {
     case SCREEN_ID_MAIN_SCREEN:      return 0;
     case SCREEN_ID_HAND_MODE_SCREEN: return 1;
     case SCREEN_ID_AUTO_MODE_SCREEN: return 2;

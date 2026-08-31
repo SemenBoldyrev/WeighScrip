@@ -131,6 +131,12 @@ typedef struct _objects_t {
     lv_obj_t *wifi_name_3;
     lv_obj_t *wifi_select_4;
     lv_obj_t *wifi_name_4;
+    lv_obj_t *time_option_screen;
+    lv_obj_t *day_custom_dropdown;
+    lv_obj_t *month_custom_dropdown;
+    lv_obj_t *year_custom_dropdown;
+    lv_obj_t *textbox_id_6;
+    lv_obj_t *textbox_id_7;
     lv_obj_t *obj11;
     lv_obj_t *obj11__spiner_container;
     lv_obj_t *obj11__obj11;

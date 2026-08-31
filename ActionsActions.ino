@@ -108,3 +108,11 @@ void action_error_message_pressed_no(lv_event_t *e) {
     hide_error_message();
 }
 
+void action_set_custom_time(lv_event_t *e) {
+    change_time_to_custom();
+}
+
+void action_custom_time_changed(lv_event_t *e) {
+    change_custom_day_selection();
+}
+

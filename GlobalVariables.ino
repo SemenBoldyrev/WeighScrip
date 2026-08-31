@@ -25,6 +25,27 @@ bool error_message_set_ok = false;
 bool error_message_set_yn = false;
 char error_message_text[100] = "No error message set...";
 
+bool wifi_ok = false;
+
+bool sd_ok = false;
+
+bool get_var_sd_ok() {
+    return sd_ok;
+}
+
+void set_var_sd_ok(bool value) {
+    sd_ok = value;
+}
+
+
+bool get_var_wifi_ok() {
+    return wifi_ok;
+}
+
+void set_var_wifi_ok(bool value) {
+    wifi_ok = value;
+}
+
 const char *get_var_error_message_text() {
     return error_message_text;
 }

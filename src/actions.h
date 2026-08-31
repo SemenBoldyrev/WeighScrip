@@ -25,6 +25,8 @@ extern void action_select_dose_for_auto(lv_event_t * e);
 extern void action_try_reconnect_to_wi_fi(lv_event_t * e);
 extern void action_error_message_pressed_yes(lv_event_t * e);
 extern void action_error_message_pressed_no(lv_event_t * e);
+extern void action_set_custom_time(lv_event_t * e);
+extern void action_custom_time_changed(lv_event_t * e);
 
 #ifdef __cplusplus
 }

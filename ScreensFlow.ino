@@ -26,6 +26,8 @@ void change_option_sub_screen(int screen) {
     case 0:
       lv_obj_add_flag(objects.preset_option_screen, LV_OBJ_FLAG_HIDDEN);
       lv_obj_add_flag(objects.wifi_option_screen, LV_OBJ_FLAG_HIDDEN);
+      lv_obj_add_flag(objects.time_option_screen, LV_OBJ_FLAG_HIDDEN);
+
       break;
 
     case 1:
@@ -36,6 +38,11 @@ void change_option_sub_screen(int screen) {
     case 2:
       change_option_sub_screen(0);
       lv_obj_clear_flag(objects.wifi_option_screen, LV_OBJ_FLAG_HIDDEN);
+      break;
+
+      case 3:
+      change_option_sub_screen(0);
+      lv_obj_clear_flag(objects.time_option_screen, LV_OBJ_FLAG_HIDDEN);
       break;
   }
 

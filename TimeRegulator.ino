@@ -9,6 +9,11 @@ bool timeOk;
 struct tm timeInfo;
 
 void init_time() {
+  // Пояс выставляем ВСЕГДА, а не только при удачной синхронизации по сети:
+  // от него зависят и getLocalTime(), и mktime() при ручной установке.
+  setenv("TZ", TIMEZONE_CODE, 1);
+  tzset();
+
   init_time_callback();
   //
   common_time_procedure();
@@ -66,4 +71,8 @@ void show_serial_time() {
   Serial.print(get_var_date_str());
   Serial.print(" ");
   Serial.println(get_var_time_str());
+}
+
+void set_new_time() {
+  // TODO: ручная установка времени, когда нет сети
 }

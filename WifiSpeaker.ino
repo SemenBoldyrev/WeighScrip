@@ -67,6 +67,7 @@ void on_wifi_state_changed(bool ok) {
     wifi_try_reconnect();
   }
   //
+  set_var_wifi_ok(ok);
   show_wifi_ok(ok);
   // сюда же вешается обновление значка в интерфейсе
 }

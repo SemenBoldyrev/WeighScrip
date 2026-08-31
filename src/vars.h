@@ -22,7 +22,9 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_MAX_WEIGHT_STR = 6,
     FLOW_GLOBAL_VARIABLE_ERROR_MESSAGE_SET_OK = 7,
     FLOW_GLOBAL_VARIABLE_ERROR_MESSAGE_SET_YN = 8,
-    FLOW_GLOBAL_VARIABLE_ERROR_MESSAGE_TEXT = 9
+    FLOW_GLOBAL_VARIABLE_ERROR_MESSAGE_TEXT = 9,
+    FLOW_GLOBAL_VARIABLE_WIFI_OK = 10,
+    FLOW_GLOBAL_VARIABLE_SD_OK = 11
 };
 
 // Native global variables
@@ -49,6 +51,10 @@ extern bool get_var_error_message_set_yn();
 extern void set_var_error_message_set_yn(bool value);
 extern const char *get_var_error_message_text();
 extern void set_var_error_message_text(const char *value);
+extern bool get_var_wifi_ok();
+extern void set_var_wifi_ok(bool value);
+extern bool get_var_sd_ok();
+extern void set_var_sd_ok(bool value);
 
 #ifdef __cplusplus
 }
