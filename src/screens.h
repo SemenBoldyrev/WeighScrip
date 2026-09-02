@@ -32,6 +32,7 @@ typedef struct _objects_t {
     lv_obj_t *obj0__obj1__obj1;
     lv_obj_t *obj0__obj2;
     lv_obj_t *obj0__wifi_status_shower;
+    lv_obj_t *obj0__sd_status_shower;
     lv_obj_t *obj1;
     lv_obj_t *obj1__hand_mode_switch;
     lv_obj_t *selection_dropbox;
@@ -52,6 +53,7 @@ typedef struct _objects_t {
     lv_obj_t *obj3__obj1__obj1;
     lv_obj_t *obj3__obj2;
     lv_obj_t *obj3__wifi_status_shower;
+    lv_obj_t *obj3__sd_status_shower;
     lv_obj_t *obj4;
     lv_obj_t *obj4__hand_mode_switch;
     lv_obj_t *obj5;
@@ -69,6 +71,7 @@ typedef struct _objects_t {
     lv_obj_t *obj6__obj1__obj1;
     lv_obj_t *obj6__obj2;
     lv_obj_t *obj6__wifi_status_shower;
+    lv_obj_t *obj6__sd_status_shower;
     lv_obj_t *min_weight_label;
     lv_obj_t *max_weight_label;
     lv_obj_t *mini_log_1;
@@ -91,6 +94,7 @@ typedef struct _objects_t {
     lv_obj_t *obj8__obj1__obj1;
     lv_obj_t *obj8__obj2;
     lv_obj_t *obj8__wifi_status_shower;
+    lv_obj_t *obj8__sd_status_shower;
     lv_obj_t *obj9;
     lv_obj_t *obj10;
     lv_obj_t *preset_option_screen;

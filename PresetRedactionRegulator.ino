@@ -254,7 +254,11 @@ void save_presets_from_sections() {
 
   if (name_redaction_container() == NULL ||
       max_weight_redaction_container() == NULL ||
-      min_weight_redaction_container() == NULL) return;
+      min_weight_redaction_container() == NULL)
+      {
+        show_error_message("Cannot save preset: the data is not presented");
+        return;
+      }
 
   paramPresetStruct *cur_preset = get_var_preset(last_selected_section);
 
@@ -266,14 +270,22 @@ void save_presets_from_sections() {
   cur_preset -> max = strtod(lv_textarea_get_text(max_weight_redaction_container()), NULL);
   cur_preset -> min = strtod(lv_textarea_get_text(min_weight_redaction_container()), NULL);
 
-  Serial.println(cur_preset -> max);
-  Serial.println(cur_preset -> min);
+  // Serial.println(cur_preset -> max);
+  // Serial.println(cur_preset -> min);
+
+  if (cur_preset -> max <= cur_preset -> min)
+  {
+    show_error_message("Cannot save preset: min value is greater / equal to the max value");
+    return;
+  }
 
   //
   save_presets_from_section_to_sd();
   //
 
   fetch_sections();
+
+  Serial.println("Saved successfully!");
 }
 
 void save_presets_from_section_to_sd() {

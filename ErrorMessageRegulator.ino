@@ -1,12 +1,16 @@
 #define ERROR_MESSAGE_CONT_AMOUNT 4
 
 
+// ВНЕШНЯЯ обёртка на весь экран - именно на неё EEZ вешает HIDDEN при
+// создании (screens.c: строки 415, 691, 1077, 2489). Внутренний
+// objX__error_message_container трогать бесполезно: он ребёнок скрытого
+// родителя, а скрытый родитель не рисуется вместе со всем поддеревом.
 static lv_obj_t* get_em_container(int i) {
   switch (i) {
-    case 0:  return objects.obj2__error_message_container;    // main
-    case 1:  return objects.obj5__error_message_container;    // hand
-    case 2:  return objects.obj7__error_message_container;    // auto
-    case 3:  return objects.obj12__error_message_container;   // options
+    case 0:  return objects.obj2;    // main
+    case 1:  return objects.obj5;    // hand
+    case 2:  return objects.obj7;    // auto
+    case 3:  return objects.obj12;   // options
     default: return NULL;
   }
 }
@@ -23,7 +27,7 @@ static lv_obj_t* get_em_panel(int i) {
 
 // На экранах логов и клавиатуры виджета сообщения нет.
 static int em_index_for_screen(int screenId) {
-  switch ((ScreensEnum)screenId) {
+  switch (screenId) {
     case SCREEN_ID_MAIN_SCREEN:      return 0;
     case SCREEN_ID_HAND_MODE_SCREEN: return 1;
     case SCREEN_ID_AUTO_MODE_SCREEN: return 2;

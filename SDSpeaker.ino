@@ -35,14 +35,85 @@ void init_SD() {
   if (!SD.begin(SD_CS, sdSPI)) { // Here we need to place other SPI bus
     Serial.println("Failed to initialize SD card");
     SD_OK = false;
-    return;
+  }
+  else // this else only exists only for on_sd_state_changed for confidence
+  {
+    SD_OK = true;
+    Serial.println("-- SD card initialized successfully! --");
   }
 
   // TJpgDec.setJpgScale(1);
   // TJpgDec.setCallback(tft_output);
 
+  on_sd_state_changed(SD_OK);
+}
+
+
+//
+// Динамическая проверка наличия карты. Вызывать из loop().
+//
+// Аппаратного пина card-detect на плате нет, поэтому проверяем реальным
+// обращением к носителю. SD.cardType() и SD.cardSize() НЕ подходят: они
+// отдают значения, прочитанные при монтировании, и после извлечения карты
+// продолжают возвращать старые данные.
+//
+#define SD_CHECK_PERIOD_OK   3000   // как часто проверять, когда карта есть
+#define SD_CHECK_PERIOD_LOST 5000   // как часто пробовать примонтировать заново
+
+static uint32_t lastSdCheck = 0;
+
+// Настоящее чтение каталога: открыть корень и запросить первый элемент.
+// Просто SD.open("/") может пройти по кэшу FAT и соврать.
+static bool sd_probe() {
+  File root = SD.open("/");
+  if (!root) return false;
+
+  if (!root.isDirectory()) {
+    root.close();
+    return false;
+  }
+
+  // File probe = root.openNextFile();   // здесь идёт обращение к карте
+  // if (probe) probe.close();
+  // root.close();
+  return true;
+}
+
+void sd_tick() {
+  uint32_t period = SD_OK ? SD_CHECK_PERIOD_OK : SD_CHECK_PERIOD_LOST;
+  if (millis() - lastSdCheck < period) return;
+  lastSdCheck = millis();
+
+  if (SD_OK) {
+    if (sd_probe()) return;          // всё на месте
+
+    Serial.println("[SD] card removed");
+    SD.end();                        // отпустить драйвер, иначе повторный begin не пройдёт
+    SD_OK = false;
+    on_sd_state_changed(false);
+    return;
+  }
+
+  // Карты не было - пробуем примонтировать: вдруг вставили
+  if (!SD.begin(SD_CS, sdSPI)) return;
+
+  Serial.println("[SD] card inserted");
   SD_OK = true;
-  Serial.println("-- SD card initialized successfully! --");
+  on_sd_state_changed(true);
+}
+
+void on_sd_state_changed(bool ok) {
+  if (ok) {
+    load_presets_from_SD();   // перечитать настройки со свежей карты
+    fetch_sections();
+    fetch_for_selection();
+  }
+  show_sd_ok(ok);
+  // сюда же можно повесить значок состояния карты в интерфейсе
+}
+
+bool is_sd_ok() {
+  return SD_OK;
 }
 
 String read_file(const char* path) {

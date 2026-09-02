@@ -28,10 +28,25 @@ void init_time_callback() {
     };
     esp_timer_handle_t minute_timer;
     esp_timer_create(&timer_args, &minute_timer);
-    esp_timer_start_periodic(minute_timer, 60ULL * 1000000ULL);
+
+    // Тикаем раз в СЕКУНДУ, а не раз в минуту.
+    // Минутный таймер стартует от момента загрузки и с реальными минутами
+    // никак не связан: после установки времени смена минуты на экране
+    // происходила в произвольный момент - вплоть до почти двух минут ожидания.
+    esp_timer_start_periodic(minute_timer, 1ULL * 1000000ULL);
 }
 
 void on_time_tick(void *arg) {
+  // Обновляем интерфейс только когда минута реально сменилась,
+  // а не каждую секунду.
+  static int lastShownMin = -1;
+
+  struct tm now;
+  if (!getLocalTime(&now, 0)) return;   // 0 = не блокировать
+
+  if (now.tm_min == lastShownMin) return;
+  lastShownMin = now.tm_min;
+
   common_time_procedure();
 }
 

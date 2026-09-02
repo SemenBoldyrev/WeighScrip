@@ -17,6 +17,9 @@
 // всё сверх него округляется и при сохранении записывается округлённым.
 #define WEIGHT_DECIMALS   6
 
+#define NOT_OK_COLOR  0xff0000
+#define OK_COLOR  0x009933
+
 // Тип окна сообщения. Держим ЗДЕСЬ, а не в .ino: Arduino генерирует
 // прототипы функций в начало файла, и enum из середины .ino они бы не увидели.
 enum error_message_type {

@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include "time.h"
+#include "esp_sntp.h"   // sntp_get_sync_status / sntp_set_sync_status
 
 #define TIME_TO_CONNECT 10
 
@@ -242,12 +243,28 @@ void sync_time(const char* timezone) { //<-- its here,  because depends on inter
   setenv("TZ", timezone, 1);
   tzset();
 
-  // int ttc = 0;
-  // while (ttc != TIME_TO_CONNECT) {
-  //   delay(1000);
-  //   ttc ++;
-  //   Serial.print(".");
-  // }
+  // configTime() только запускает SNTP-клиент и сразу возвращается,
+  // ответ от сервера приходит позже - отсюда "меняется с N-го раза".
+  //
+  // Проверять "год больше 2020" НЕЛЬЗЯ: после первой удачной синхронизации
+  // или ручной установки времени условие истинно сразу, ожидание
+  // пропускается и мы снова читаем старые часы.
+  // Поэтому сбрасываем признак синхронизации и ждём именно НОВЫЙ ответ.
+  sntp_set_sync_status(SNTP_SYNC_STATUS_RESET);
+
+  const uint32_t SNTP_TIMEOUT = 10000;   // мс
+  uint32_t waitStart = millis();
+
+  while (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED) {
+    if (millis() - waitStart > SNTP_TIMEOUT) {
+      Serial.println();
+      Serial.println("!! NTP sync timeout");
+      break;
+    }
+    delay(100);
+    Serial.print(".");
+  }
+
   Serial.println();
   Serial.println("Timezone changed! New current time: ");
 

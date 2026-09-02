@@ -27,14 +27,26 @@ char error_message_text[100] = "No error message set...";
 
 bool wifi_ok = false;
 
-bool sd_ok = false;
+//bool sd_ok = false;
+
+int32_t selected_dose = -1; // -1 for custom
+
+int32_t get_var_selected_dose() {
+    return selected_dose;
+}
+
+void set_var_selected_dose(int32_t value) {
+    selected_dose = value;
+}
+
 
 bool get_var_sd_ok() {
-    return sd_ok;
+    return is_sd_ok();
 }
 
 void set_var_sd_ok(bool value) {
-    sd_ok = value;
+    //basically depends on previously made sd speaker
+    // sd_ok = value;
 }
 
 
@@ -95,6 +107,7 @@ void set_var_min_weight_str(const char *value) {
     // strncpy(min_weight_str, value, sizeof(min_weight_str) / sizeof(char));
     // min_weight_str[sizeof(min_weight_str) / sizeof(char) - 1] = 0;
     char *end;
+    set_var_min_weight(strtod(value, &end));
 }
 
 

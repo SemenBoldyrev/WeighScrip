@@ -8,7 +8,15 @@ int get_event_user_data_int(lv_event_t *e) {
 }
 
 void action_change_screen(lv_event_t *e) {
-  change_screen((ScreensEnum)get_event_user_data_int(e));
+  ScreensEnum nxtScreen = (ScreensEnum)get_event_user_data_int(e);
+  // for quality control
+    if (nxtScreen == SCREEN_ID_AUTO_MODE_SCREEN && get_var_min_weight() >= get_var_max_weight())
+    {
+        show_error_message("Cannot start auto mod: min value is greater / equal to the max value");
+        return;
+    }
+  //
+  change_screen(nxtScreen);
 }
 
 void action_change_screen_main(lv_event_t *e) {

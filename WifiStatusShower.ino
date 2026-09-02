@@ -18,8 +18,8 @@ void show_wifi_ok(bool isOk) {
 }
 
 
-void change_every_wifi_shower_color(bool green) {
-  uint32_t color = green ? 0x009933 : 0xff0000;
+void change_every_wifi_shower_color(bool ok) {
+  uint32_t color = ok ? OK_COLOR : NOT_OK_COLOR;
 
   for (int i = 0; i < WIFI_SHOWER_AMOUNT; i++) {
     lv_obj_t* obj = wifi_status_shower(i);

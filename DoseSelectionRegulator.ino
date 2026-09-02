@@ -1,7 +1,5 @@
 static lv_obj_t* selection_dropbox() {return objects.selection_dropbox;}
 
-static int selected_dose = 0;
-
 void fetch_for_selection() {
   if (selection_dropbox() == NULL) return;
 
@@ -21,14 +19,14 @@ void fetch_for_selection() {
   }
 
   lv_dropdown_set_options(selection_dropbox(), ans.c_str());
-  selected_dose = 0;
-  select_change_dose();
+  select_change_dose(); // should be before set var
+  set_var_selected_dose(0);
   lv_obj_clear_state(selection_dropbox(), LV_STATE_DISABLED);
 }
 
 void select_change_dose() {
-  selected_dose = lv_dropdown_get_selected(selection_dropbox());
-  paramPresetStruct *cur_preset = get_var_preset(selected_dose);
+  set_var_selected_dose(lv_dropdown_get_selected(selection_dropbox()));
+  paramPresetStruct *cur_preset = get_var_preset(get_var_selected_dose());
 
   set_var_min_weight(cur_preset -> min);
   set_var_max_weight(cur_preset -> max);
@@ -39,4 +37,9 @@ void clear_selection_dropbox() {
 
   lv_dropdown_set_options(selection_dropbox(), "None");
   lv_obj_add_state(selection_dropbox(), LV_STATE_DISABLED);
+
+  set_var_min_weight(0);
+  set_var_max_weight(0);
+
+  set_var_selected_dose(-1);
 }
