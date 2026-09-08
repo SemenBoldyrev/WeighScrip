@@ -71,6 +71,7 @@ void setup() {
   ui_init();
   // Serial.println("[BOOT] ui_init() <- ok");
   // show_lvgl_mem_info("after ui_init");
+  lv_generate_top_widgets();
 
   tft.setRotation(3);
 
@@ -99,8 +100,21 @@ void setup() {
 
   init_time();
 
+  check_create_directory_files();
+
   fetch_sections(); // -> for settings
   fetch_for_selection(); // -> for selection
+
+
+  //
+    // show_check_save_auto_weight(0.6);
+    // show_check_save_auto_weight(0.8);
+    // show_check_save_auto_weight(1.6);
+    // show_check_save_auto_weight(6.7);
+    // show_check_save_auto_weight(6.9);
+    // show_check_save_auto_weight(1.5);
+    // show_check_save_auto_weight(0.1);
+  //
 }
 
 void loop() {
@@ -164,4 +178,12 @@ void read_touch(lv_indev_t *indev, lv_indev_data_t *data) {
   data -> point.x = map(p.x, touchscreenMaxX, touchscreenMinX, 1, TFT_HOR_RES);
   data -> point.y = map(p.y, touchscreenMinY, touchscreenMaxY, 1, TFT_VER_RES);
   data -> state = LV_INDEV_STATE_PRESSED;
+}
+
+
+void lv_generate_top_widgets()
+{
+  lv_obj_set_parent(objects.obj0, lv_layer_top());   // bottom panel
+  lv_obj_set_parent(objects.obj2, lv_layer_top());   // error message
+  lv_obj_set_parent(objects.obj3, lv_layer_top());   // spinner
 }

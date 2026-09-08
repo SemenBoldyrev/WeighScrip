@@ -6,10 +6,11 @@ void change_to_main_screen() {
 }
 
 void change_screen(ScreensEnum screen) {
-  Serial.print("Changing Screen To: ");
-  Serial.println(screen);
+  char msg[48];
+  snprintf(msg, sizeof(msg),"Changing Screen To: %d", screen);
+  show_in_console_save_in_log("screen", msg);
   loadScreen(screen);
-  Serial.println("Screen Changed");
+  show_in_console_save_in_log("screen", "Screen Changed");
   curScreenId = (int)screen;
 }
 

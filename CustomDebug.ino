@@ -91,3 +91,59 @@ void show_lvgl_mem_info(const char* tag) {
                 (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
   Serial.flush();
 }
+
+void show_in_console(const char* key, const char* message)
+{
+  char tag[30];
+  make_tag(key, tag, sizeof(tag));
+
+  Serial.print(tag);
+  Serial.print("  ");
+  Serial.println(message);
+}
+
+// Метка времени для строки лога. Нужна и системному журналу, и журналу
+// взвешиваний, поэтому вынесена отдельно.
+// Внутри файла двоеточия разрешены - ограничение только для ИМЁН файлов.
+void build_log_timestamp(char* out, size_t size)
+{
+  struct tm t;
+
+  if (getLocalTime(&t, 0) && t.tm_year >= (2020 - 1900)) {
+    snprintf(out, size, "%04d-%02d-%02d %02d:%02d:%02d",
+             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+             t.tm_hour, t.tm_min, t.tm_sec);
+  }
+  else {
+    // Часы ещё не выставлены - пишем время от включения платы
+    snprintf(out, size, "uptime %lus", (unsigned long)(millis() / 1000));
+  }
+}
+
+void show_in_console_save_in_log(const char* key, const char* message)
+{
+  show_in_console(key, message);
+
+  char stamp[24];
+  char tag[30];
+
+  build_log_timestamp(stamp, sizeof(stamp));
+  make_tag(key, tag, sizeof(tag));
+
+  save_in_system_log(stamp, tag, message);
+}
+
+void make_tag(const char* text, char* out, size_t size) {
+  if (size < 3) { if (size) out[0] = '\0'; return; }
+
+  size_t i = 0;
+  out[i++] = '[';
+
+  // size - 2: оставляем место под ']' и завершающий ноль
+  for (const char* p = text; *p != '\0' && i < size - 2; p++) {
+    out[i++] = toupper((unsigned char)*p);
+  }
+
+  out[i++] = ']';
+  out[i]   = '\0';
+}

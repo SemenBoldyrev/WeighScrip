@@ -31,6 +31,41 @@ bool wifi_ok = false;
 
 int32_t selected_dose = -1; // -1 for custom
 
+char cur_system_log_file_name[30] = "";
+char cur_saves_log_file_name[30] = "";
+
+error_message_check em_check = NONE; // not tracked in EEZ
+
+const error_message_check get_var_em_check() {
+    return em_check;
+}
+
+void set_var_em_check(error_message_check value) {
+    em_check = value;
+}
+
+
+const char *get_var_cur_saves_log_file_name() {
+    return cur_saves_log_file_name;
+}
+
+void set_var_cur_saves_log_file_name(const char *value) {
+    strncpy(cur_saves_log_file_name, value, sizeof(cur_saves_log_file_name) / sizeof(char));
+    cur_saves_log_file_name[sizeof(cur_saves_log_file_name) / sizeof(char) - 1] = 0;
+}
+
+
+const char *get_var_cur_system_log_file_name() {
+    return cur_system_log_file_name;
+}
+
+void set_var_cur_system_log_file_name(const char *value) {
+    strncpy(cur_system_log_file_name, value, sizeof(cur_system_log_file_name) / sizeof(char));
+    cur_system_log_file_name[sizeof(cur_system_log_file_name) / sizeof(char) - 1] = 0;
+}
+
+
+
 int32_t get_var_selected_dose() {
     return selected_dose;
 }

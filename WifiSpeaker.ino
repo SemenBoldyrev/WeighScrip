@@ -13,7 +13,8 @@ const char* ntpServer = "pool.ntp.org";
 
 
 void init_wifi() {
-  Serial.println("Initializing wifi connection...");
+  // Serial.println("Initializing wifi connection...");
+  show_in_console_save_in_log("wifi","Initializing wifi connection...");
   WiFi.mode(WIFI_STA); // было WIFI_AP - в этом режиме WiFi.begin() к сети не подключится
   WiFi.setAutoReconnect(true);  // драйвер сам поднимет связь после короткого пропадания
 
@@ -59,12 +60,17 @@ void wifi_tick() {
 
 void on_wifi_state_changed(bool ok) {
   if (ok) {
-    Serial.print("[WIFI] connected, ip: ");
-    Serial.println(WiFi.localIP());
+    char msg[64];
+    IPAddress ip = WiFi.localIP();
+
+    snprintf(msg, sizeof(msg), "connected, ip: %u.%u.%u.%u",
+         ip[0], ip[1], ip[2], ip[3]);
+    show_in_console_save_in_log("wifi",msg);
     sync_time(timezoneInfo);   // время могло разъехаться, пока связи не было
   }
   else {
-    Serial.println("[WIFI] connection lost");
+    // Serial.println("[WIFI] connection lost");
+    show_in_console_save_in_log("wifi","connection lost");
     wifi_try_reconnect();
   }
   //
@@ -75,10 +81,12 @@ void on_wifi_state_changed(bool ok) {
 
 void wifi_try_reconnect () {
   // strange behavior in terminal, but breaks nothing so ok
-  Serial.println("[WIFI] trying to reconnect...");
+  // Serial.println("[WIFI] trying to reconnect...");
+  show_in_console_save_in_log("wifi","trying to reconnect...");
   WiFi.reconnect();
-  if (WiFi.status() == WL_CONNECTED) Serial.println("[WIFI] reconnection successfull!");
-  else Serial.println("[WIFI] reconnection unsuccessfull...");
+  if (WiFi.status() == WL_CONNECTED) show_in_console_save_in_log("wifi","reconnection successfull!");
+  else show_in_console_save_in_log("wifi","reconnection unsuccessfull...");
+  
   //
   show_wifi_ok(WiFi.status() == WL_CONNECTED); // need this in 3 different places, should change later
   //
@@ -89,19 +97,28 @@ bool is_wifi_ok() {
 }
 
 bool connect_to_wifi(String gSsid, String gPassword) { //maybe the char* would be better, but idk, struct using String
-  Serial.println("---");
-  Serial.println("Tryingn to connect to wifi, using:");
-  Serial.print("SSID: ");
-  Serial.println(gSsid);
-  Serial.print("PASSWORD: ");
-  Serial.println(gPassword);
+  // Serial.println("---");
+  // Serial.println("Tryingn to connect to wifi, using:");
+  // Serial.print("SSID: ");
+  // Serial.println(gSsid);
+  // Serial.print("PASSWORD: ");
+  // Serial.println(gPassword);
+
+  char msg[96];
+
+  // %s, а не %u - это строки. И String в varargs подставлять нельзя,
+  // нужен c_str(). Пароль в журнал не пишем.
+  snprintf(msg, sizeof(msg), "trying to connect, ssid: %s", gSsid.c_str());
+
+  show_in_console_save_in_log("wifi", msg);
 
   // Пустой или заведомо мусорный SSID подключать бессмысленно, а вот
   // навредить он успеет: драйвер уйдёт в бесконечные попытки и заблокирует
   // и следующий begin(), и сканирование.
   gSsid.trim();
   if (gSsid.length() == 0 || gSsid == "-" || gSsid == "null") {
-    Serial.println("!! no valid saved SSID, skipping connect");
+    // Serial.println("!! no valid saved SSID, skipping connect");
+    show_in_console_save_in_log("wifi","!! no valid saved SSID, skipping connect");
     ConnectionOk = 0;
     return false;
   }
@@ -124,12 +141,16 @@ bool connect_to_wifi(String gSsid, String gPassword) { //maybe the char* would b
   bool success = WiFi.status() == WL_CONNECTED;
 
   if (success) {
-    Serial.println("Connection successfull!");
+    // Serial.println("Connection successfull!");
+    show_in_console_save_in_log("wifi","Connection successfull!");
+    
     save_last_wifi_connection(gSsid, gPassword);
     ConnectionOk = 1;
   }
   else {
-    Serial.println("Unable to connect...");
+    // Serial.println("Unable to connect...");
+    show_in_console_save_in_log("wifi","Unable to connect...");
+
     ConnectionOk = 0;
     // Обязательно: иначе драйвер продолжит переподключаться в фоне вечно
     // и заблокирует и сканирование, и любые следующие попытки.
@@ -151,17 +172,27 @@ void save_last_wifi_connection(String gSsid, String gPassword) {
 }
 
 void scan_network() {
-  Serial.println("---");
-  Serial.println("Scaning network...");
+  //Serial.println("---");
+  //Serial.println("Scaning network...");
+  show_in_console_save_in_log("wifi","Scaning network...");
+
+  
 
   // Драйвер может быть вообще не поднят - тогда любые mode/disconnect
   // отвечают 0x3001 (ESP_ERR_WIFI_NOT_INIT). Сначала убеждаемся, что он есть.
   wifi_mode_t mode = WiFi.getMode();
-  Serial.printf("[WIFI] mode before scan: %d, status: %d\n", (int)mode, (int)WiFi.status());
+  char msg[48];   // было char* msg[48] - это массив УКАЗАТЕЛЕЙ, а нужен массив символов
+
+  // \n в конце не нужен: show_in_console() и так печатает println
+  snprintf(msg, sizeof(msg), "mode before scan: %d, status: %d", (int)mode, (int)WiFi.status());
+  show_in_console_save_in_log("wifi", msg);
+
+  //Serial.printf("[WIFI] mode before scan: %d, status: %d\n", (int)mode, (int)WiFi.status());
 
   if (mode != WIFI_STA && mode != WIFI_AP_STA) {
     if (!WiFi.mode(WIFI_STA)) {
-      Serial.println("!! cannot switch to STA, wifi driver is down");
+      // Serial.println("!! cannot switch to STA, wifi driver is down");
+      show_in_console_save_in_log("wifi","!! cannot switch to STA, wifi driver is down");
       set_var_cur_wifi_amount(0);
       return;
     }
@@ -170,20 +201,27 @@ void scan_network() {
 
   WiFi.scanDelete();   // сбросить результат прошлого сканирования
 
-  // Отцепляемся, только если реально подключены или подключаемся -
-  // иначе disconnect() на пустом месте тоже сыплет ошибками.
-  wl_status_t st = WiFi.status();
-  if (st == WL_CONNECTED || st == WL_IDLE_STATUS) {
-    WiFi.disconnect(false);
-    delay(100);
-  }
+  // ГЛАВНОЕ. Приёмник один: сканировать эфир и одновременно пытаться
+  // подключиться нельзя. А setAutoReconnect(true) заставляет драйвер
+  // возобновлять попытки бесконечно, поэтому проверять WiFi.status()
+  // бесполезно - формально он WL_DISCONNECTED, а радио занято.
+  // Глушим автоподключение на время сканирования.
+  bool wasConnected = (WiFi.status() == WL_CONNECTED);
+
+  WiFi.setAutoReconnect(false);
+  WiFi.disconnect(false);   // остановить текущую попытку, радио не выключать
+  delay(150);
 
   int n = WiFi.scanNetworks();
+
+  // Возвращаем автоподключение и, если связь была, поднимаем её обратно
+  WiFi.setAutoReconnect(true);
+  if (wasConnected) WiFi.reconnect();
   if (n <= 0) {
     // -1 = WIFI_SCAN_RUNNING (ещё идёт), -2 = WIFI_SCAN_FAILED
-    Serial.print("No networks found...  (");
-    Serial.print(n);
-    Serial.println(")");
+    char msg[48];
+    snprintf(msg, sizeof(msg), "scan failed, code %d", n);
+    show_in_console_save_in_log("wifi", msg);
     set_var_cur_wifi_amount(0);
   }
   else {
@@ -223,6 +261,8 @@ void scan_network() {
 
     set_var_cur_wifi_amount(n);
   }
+
+  if (n < 0) show_error_message("Error on scanning network!");
 }
 
 wifiNetworkData *get_scaned_wifi_network_data(int index) {
@@ -258,7 +298,7 @@ void sync_time(const char* timezone) { //<-- its here,  because depends on inter
   while (sntp_get_sync_status() != SNTP_SYNC_STATUS_COMPLETED) {
     if (millis() - waitStart > SNTP_TIMEOUT) {
       Serial.println();
-      Serial.println("!! NTP sync timeout");
+      show_in_console_save_in_log("time", "NTP sync timeout");
       break;
     }
     delay(100);

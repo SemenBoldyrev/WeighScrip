@@ -165,5 +165,8 @@ void change_time_to_custom() {
   settimeofday(&now, NULL);
   common_time_procedure();
 
-  Serial.println("[CT] time successfully changed!");
+  char msg[64];
+  snprintf(msg, sizeof(msg), "time set manually to %02d.%02d.%d %02d:%02d",
+           day, month, year, hours, minutes);
+  show_in_console_save_in_log("time", msg);
 }

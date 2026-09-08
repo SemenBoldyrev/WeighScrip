@@ -32,10 +32,6 @@ void request_input_change(int textboxId) {
 
 
 void end_input_session() {
-  //
-  show_spiner(1);
-  //
-
   if (cur_target != NULL) {
     if (numerical_keyboard_has_id(lastReqTextboxId)) lv_textarea_set_text(cur_target, redact_numerical_input_value(get_var_input_str()));
     else lv_textarea_set_text(cur_target, get_var_input_str());

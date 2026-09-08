@@ -27,6 +27,9 @@ extern void action_error_message_pressed_yes(lv_event_t * e);
 extern void action_error_message_pressed_no(lv_event_t * e);
 extern void action_set_custom_time(lv_event_t * e);
 extern void action_custom_time_changed(lv_event_t * e);
+extern void action_hand_mode_clear(lv_event_t * e);
+extern void action_hand_mode_tara(lv_event_t * e);
+extern void action_hand_mode_save(lv_event_t * e);
 
 #ifdef __cplusplus
 }

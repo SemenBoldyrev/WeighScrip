@@ -1,18 +1,19 @@
-#define SPINERS_AMOUNT 2
+// #define SPINERS_AMOUNT 2
 
 
-static lv_obj_t* get_spiner_container(int i) {
-  switch (i) { // why they are not getting names?
-    case 0:  return objects.obj11__spiner_container;   // options
-    case 1:  return objects.obj13__spiner_container;   // keyboard
-    default: return NULL;
-  }
+static lv_obj_t* get_spiner_container() {
+  // switch (i) { // why they are not getting names?
+  //   case 0:  return objects.obj8__spiner_container;   // options
+  //   case 1:  return objects.obj10__spiner_container;   // keyboard
+  //   default: return NULL;
+  // }
+  return objects.obj3; 
 }
 
-void show_spiner(int spinerId) {
-  lv_obj_t* cont = get_spiner_container(spinerId);
+void show_spiner() {
+  lv_obj_t* cont = get_spiner_container();
   if (cont == NULL) {
-    Serial.printf("!! no spiner with id %d\n", spinerId);
+    Serial.printf("!! no spiner widget!");
     return;
   }
 
@@ -22,8 +23,8 @@ void show_spiner(int spinerId) {
 }
 
 
-void hide_spiner(int spinerId) {
-  lv_obj_t* cont = get_spiner_container(spinerId);
+void hide_spiner() {
+  lv_obj_t* cont = get_spiner_container();
   if (cont == NULL) return;
 
   lv_obj_add_flag(cont, LV_OBJ_FLAG_HIDDEN);
@@ -31,7 +32,8 @@ void hide_spiner(int spinerId) {
 
 
 void hide_all_spiners() {
-  for (int i = 0; i < SPINERS_AMOUNT; i++) {
-    hide_spiner(i);
-  }
+  // for (int i = 0; i < SPINERS_AMOUNT; i++) {
+  //   hide_spiner(i);
+  // }
+  hide_spiner();
 }

@@ -27,6 +27,12 @@ enum error_message_type {
   EM_DANGER
 };
 
+// So i could track the error message choice
+enum error_message_check {
+  NONE,
+  AUTO_MOD_START
+};
+
 struct paramPresetStruct {
   int index;
   String name;

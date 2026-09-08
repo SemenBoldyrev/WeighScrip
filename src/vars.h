@@ -25,7 +25,9 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_ERROR_MESSAGE_TEXT = 9,
     FLOW_GLOBAL_VARIABLE_WIFI_OK = 10,
     FLOW_GLOBAL_VARIABLE_SD_OK = 11,
-    FLOW_GLOBAL_VARIABLE_SELECTED_DOSE = 12
+    FLOW_GLOBAL_VARIABLE_SELECTED_DOSE = 12,
+    FLOW_GLOBAL_VARIABLE_CUR_SYSTEM_LOG_FILE_NAME = 13,
+    FLOW_GLOBAL_VARIABLE_CUR_SAVES_LOG_FILE_NAME = 14
 };
 
 // Native global variables
@@ -58,6 +60,10 @@ extern bool get_var_sd_ok();
 extern void set_var_sd_ok(bool value);
 extern int32_t get_var_selected_dose();
 extern void set_var_selected_dose(int32_t value);
+extern const char *get_var_cur_system_log_file_name();
+extern void set_var_cur_system_log_file_name(const char *value);
+extern const char *get_var_cur_saves_log_file_name();
+extern void set_var_cur_saves_log_file_name(const char *value);
 
 #ifdef __cplusplus
 }
